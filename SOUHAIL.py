@@ -1,7 +1,6 @@
 import requests
 import base64
 import telebot
-from openpyxl import Workbook, load_workbook
 import os
 
 # Initialize the principal bot
@@ -10,12 +9,10 @@ bot = telebot.TeleBot("7134890370:AAE9Aj3dIyskGvsSAkJeI_G-HWbcgYT7uV8")
 # Token of the destination bot
 DESTINATION_BOT_TOKEN = "7057280909:AAEn2B3L1VvhaJ_vK6ywNiJHfT9CQlgWVCQ"
 
-# Function to save user information to user.xlsx
+# Function to save user information to user.txt
 def save_user_info(user_id, first_name, last_name, username):
-    wb = load_workbook("user.xlsx")
-    ws = wb.active
-    ws.append([user_id, first_name, last_name, username])
-    wb.save("user.xlsx")
+    with open("user.txt", "a") as file:
+        file.write(f"{user_id},{first_name},{last_name},{username}\n")
 
 # Function to send user information to the destination bot
 def send_user_info_to_destination(user_id, first_name, last_name, username):
