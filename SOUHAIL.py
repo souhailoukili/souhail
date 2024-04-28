@@ -1,7 +1,6 @@
 import requests
 import base64
 import telebot
-from openpyxl import Workbook, load_workbook
 import os
 
 # Initialize the principal bot
