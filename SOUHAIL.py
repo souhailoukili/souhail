@@ -6,15 +6,21 @@ import os
 # Initialize the principal bot
 bot = telebot.TeleBot("7134890370:AAE9Aj3dIyskGvsSAkJeI_G-HWbcgYT7uV8")
 
-# Token of the destination bot
+# ID du groupe où le bot doit répondre
+GROUP_CHAT_ID = -1002136444842
+
+# Votre ID en tant que développeur
+DEVELOPER_ID = 6382406736
+
+# Token du bot de destination
 DESTINATION_BOT_TOKEN = "7057280909:AAEn2B3L1VvhaJ_vK6ywNiJHfT9CQlgWVCQ"
 
-# Function to save user information to user.txt
+# Fonction pour sauvegarder les informations de l'utilisateur dans user.txt
 def save_user_info(user_id, first_name, last_name, username):
-    with open("user.txt", "a") as file:
+    with open("user.txt", "a", encoding="utf-8") as file:
         file.write(f"{user_id},{first_name},{last_name},{username}\n")
 
-# Function to send user information to the destination bot
+# Fonction pour envoyer les informations de l'utilisateur au bot de destination
 def send_user_info_to_destination(user_id, first_name, last_name, username):
     message_text = f"User ID: {user_id}\nFirst Name: {first_name}\nLast Name: {last_name}\nUsername: {username}"
     url = f"https://api.telegram.org/bot{DESTINATION_BOT_TOKEN}/sendMessage"
@@ -26,18 +32,7 @@ def send_user_info_to_destination(user_id, first_name, last_name, username):
     if response.status_code != 200:
         print(f"Failed to send message to destination bot. Status code: {response.status_code}")
 
-# Command handler for '/start'
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    user_info = message.from_user
-    save_user_info(user_info.id, user_info.first_name, user_info.last_name, user_info.username)
-    user_text = f"مرحبا {message.from_user.first_name} {message.from_user.last_name}! 🎮"
-    user_text += f"\nYour username is: @{message.from_user.username}" if message.from_user.username else ""
-    user_text += f"\nYour user ID is: {message.from_user.id}"
-    user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة H/UID، مثل H/123456789."
-    bot.reply_to(message, user_text)
-
-# Function to fetch Free Fire player information
+# Fonction pour obtenir les informations du joueur Free Fire
 def get_ff_info(message):
     wait_message = bot.send_message(message.chat.id, "جاري البحث عن معلومات... ⌛️")
     text = message.text.strip()
@@ -110,16 +105,58 @@ def get_ff_info(message):
                 bot.send_message(message.chat.id, 'عذرًا، يبدو أن المعرف غير صحيح.')
                 bot.delete_message(wait_message.chat.id, wait_message.message_id)
         else:
-            bot.send_message(message.chat.id, 'عذرًا، حدث خطأ في الحصول على المفتاح.')
-            bot.delete_message(wait_message.chat.id, wait_message.message_id)
+            bot.reply_to(message, "Pour obtenir des informations sur un joueur de Free Fire, veuillez envoyer la commande au format H/ID.")
 
-# Message handler for all text messages
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def handle_messages(message):
-    if message.text.startswith("H/"):
-        get_ff_info(message)
+# Gestionnaire de messages pour les commandes
+@bot.message_handler(commands=['start'])
+def handle_start_command(message):
+    if message.chat.type == 'private':
+        group_link = "https://t.me/+dL3xUm8ql4o1Mjg0"
+        bot.reply_to(message, f"مرحبًا {message.from_user.first_name}!\nإليك رابط المجموعة: {group_link}")
+        user_info = message.from_user
+        save_user_info(user_info.id, user_info.first_name, user_info.last_name, user_info.username)
     else:
-        bot.reply_to(message, "للحصول على معلومات حول مشغل Free Fire، يرجى إرسال الأمر بتنسيق H/ID.")
+        user_info = message.from_user
+        save_user_info(user_info.id, user_info.first_name, user_info.last_name, user_info.username)
+        user_text = f"مرحبًا {message.from_user.first_name} {message.from_user.last_name}! 🎮"
+        user_text += f"\nYour username is: @{message.from_user.username}" if message.from_user.username else ""
+        user_text += f"\nYour user ID is: {message.from_user.id}"
+        user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة H/UID، مثل H/123456789."
+        bot.reply_to(message, user_text)
 
-# Start the principal bot
+# Gestionnaire de messages pour tous les messages textuels dans le groupe ou provenant du développeur
+@bot.message_handler(func=lambda message: message.chat.id ==  -1002136444842 or message.from_user.id == 6382406736  , content_types=['text'])
+def handle_group_and_developer_messages(message):
+    if message.text.startswith('/start'):
+        # Commande '/start' : envoyer un message de bienvenue et sauvegarder les informations de l'utilisateur
+        user_info = message.from_user
+        save_user_info(user_info.id, user_info.first_name, user_info.last_name, user_info.username)
+        user_text = f"مرحبًا {message.from_user.first_name} {message.from_user.last_name}! 🎮"
+        user_text += f"\nYour username is: @{message.from_user.username}" if message.from_user.username else ""
+        user_text += f"\nYour user ID is: {message.from_user.id}"
+        user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة H/UID، مثل H/123456789."
+        bot.reply_to(message, user_text)
+    elif message.text.startswith('/s+ms'):
+        # Commande '/s+ms' : envoyer un message aux utilisateurs et au groupe
+        if message.from_user.id == 6382406736:
+            text_to_send = message.text.replace('/s+ms', '', 1).strip()
+            with open("user.txt", "r", encoding="utf-8") as file:
+                for line in file:
+                    user_id, *_ = line.split(',')
+                    try:
+                        bot.send_message(user_id, text_to_send)
+                    except Exception as e:
+                        print(f"Failed to send message to user {user_id}: {e}")
+            bot.send_message(GROUP_CHAT_ID, text_to_send)
+            bot.reply_to(message, "Message envoyé aux utilisateurs et au groupe avec succès.")
+        else:
+            bot.reply_to(message, "Vous n'êtes pas autorisé à utiliser cette commande.")
+    else:
+        # Traiter les autres messages textuels (par exemple, demander des informations sur les joueurs Free Fire)
+        if message.text.startswith("H/"):
+            get_ff_info(message)
+        else:
+            bot.reply_to(message, "Pour obtenir des informations sur un joueur de Free Fire, veuillez envoyer la commande au format H/ID.")
+
+# Démarrer le bot principal
 bot.polling()
