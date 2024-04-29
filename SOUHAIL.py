@@ -116,7 +116,10 @@ def get_ff_info(message):
 # Message handler for all text messages
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def handle_messages(message):
-    get_ff_info(message)
+    if message.text.startswith("H/"):
+        get_ff_info(message)
+    else:
+        bot.reply_to(message, "للحصول على معلومات حول مشغل Free Fire، يرجى إرسال الأمر بتنسيق H/ID.")
 
 # Start the principal bot
 bot.polling()
