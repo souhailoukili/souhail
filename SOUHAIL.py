@@ -111,7 +111,7 @@ def get_ff_info(message):
 @bot.message_handler(commands=['start'])
 def handle_start_command(message):
     if message.chat.type == 'private':
-        group_link = "https://t.me/+dL3xUm8ql4o1Mjg0"
+        group_link = "https://t.me/+MrCxNVDkIgM2MTU0"
         bot.reply_to(message, f"مرحبًا {message.from_user.first_name}!\nإليك رابط المجموعة: {group_link}")
         user_info = message.from_user
         save_user_info(user_info.id, user_info.first_name, user_info.last_name, user_info.username)
