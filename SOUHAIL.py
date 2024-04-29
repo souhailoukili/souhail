@@ -112,9 +112,6 @@ def get_ff_info(message):
         else:
             bot.send_message(message.chat.id, 'عذرًا، حدث خطأ في الحصول على المفتاح.')
             bot.delete_message(wait_message.chat.id, wait_message.message_id)
-    else:
-        bot.send_message(message.chat.id, "الرجاء إدخال المعرف بشكل صحيح.")
-        bot.delete_message(wait_message.chat.id, wait_message.message_id)
 
 # Message handler for all text messages
 @bot.message_handler(func=lambda message: True, content_types=['text'])
