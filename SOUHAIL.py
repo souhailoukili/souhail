@@ -34,14 +34,14 @@ def send_welcome(message):
     user_text = f"مرحبا {message.from_user.first_name} {message.from_user.last_name}! 🎮"
     user_text += f"\nYour username is: @{message.from_user.username}" if message.from_user.username else ""
     user_text += f"\nYour user ID is: {message.from_user.id}"
-    user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة B/UID، مثل B/123456789."
+    user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة H/UID، مثل H/123456789."
     bot.reply_to(message, user_text)
 
 # Function to fetch Free Fire player information
 def get_ff_info(message):
     wait_message = bot.send_message(message.chat.id, "جاري البحث عن معلومات... ⌛️")
     text = message.text.strip()
-    if text.startswith("B/") and len(text) > 2:
+    if text.startswith("H/") and len(text) > 2:
         UID = text[2:]
         rr = requests.get('https://player-info-api.vercel.app/api/v1/ff/key/new').json()
         if 'message' in rr:
