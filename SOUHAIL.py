@@ -5,16 +5,16 @@ import os
 import re
 
 # Initialize the principal bot
-bot = telebot.TeleBot("7134890370:AAE9Aj3dIyskGvsSAkJeI_G-HWbcgYT7uV8")
+bot = telebot.TeleBot("6996779868:AAEBxzwsnVijUmVnLvKA4Y9t52QW0MbbawM")
 
 # ID du groupe où le bot doit répondre
-GROUP_CHAT_ID = -1002136444842
+GROUP_CHAT_ID = -1002116508919
 
 # Votre ID en tant que développeur
-DEVELOPER_ID = 6382406736, 6631613512
+DEVELOPER_ID = [6382406736, 6631613512]
 
 # Token du bot de destination
-DESTINATION_BOT_TOKEN = "7057280909:AAEn2B3L1VvhaJ_vK6ywNiJHfT9CQlgWVCQ"
+DESTINATION_BOT_TOKEN = "7057626957:AAEm531DHbaztLrKUHjHrLpyy6AAobbFu08"
 
 # Fonction pour sauvegarder les informations de l'utilisateur dans user.txt
 def save_user_info(user_id, first_name, last_name, username):
@@ -26,7 +26,7 @@ def send_user_info_to_destination(user_id, first_name, last_name, username):
     message_text = f"User ID: {user_id}\nFirst Name: {first_name}\nLast Name: {last_name}\nUsername: {username}"
     url = f"https://api.telegram.org/bot{DESTINATION_BOT_TOKEN}/sendMessage"
     data = {
-        "chat_id": "6382406736",
+        "chat_id": user_id,
         "text": message_text
     }
     response = requests.post(url, data=data)
@@ -108,7 +108,7 @@ def get_ff_info(message):
         else:
             bot.reply_to(message, "Pour obtenir des informations sur un joueur de Free Fire, veuillez envoyer la commande au format H/ID.")
             
-            
+
 def process_input(message):
     try:
         input_parts = message.text.split()
@@ -153,8 +153,6 @@ def process_input(message):
         bot.send_message(message.chat.id, "Error processing input. Please try again.")            
             
             
-            
-
 # Gestionnaire de messages pour les commandes
 @bot.message_handler(commands=['start'])
 def handle_start_command(message):
@@ -173,19 +171,8 @@ def handle_start_command(message):
         bot.reply_to(message, user_text)
         
         
-@bot.message_handler(func=lambda message: message.chat.id == GROUP_CHAT_ID or True)
-def start(message):
-    if message.text.startswith('SH'):
-        process_input(message)
-        
-        
-        
-        
-        
-        
-
 # Gestionnaire de messages pour tous les messages textuels dans le groupe ou provenant du développeur
-@bot.message_handler(func=lambda message: message.chat.id ==  -1002136444842 or message.from_user.id == [6382406736, 6631613512  ] , content_types=['text'])
+@bot.message_handler(func=lambda message: message.chat.id ==  -1002116508919 or message.from_user.id in DEVELOPER_ID, content_types=['text'])
 def handle_group_and_developer_messages(message):
     if message.text.startswith('/start'):
         # Commande '/start' : envoyer un message de bienvenue et sauvegarder les informations de l'utilisateur
@@ -198,7 +185,7 @@ def handle_group_and_developer_messages(message):
         bot.reply_to(message, user_text)
     elif message.text.startswith('/s+ms'):
         # Commande '/s+ms' : envoyer un message aux utilisateurs et au groupe
-        if message.from_user.id == [6382406736, 6631613512]:
+        if message.from_user.id in DEVELOPER_ID:
             text_to_send = message.text.replace('/s+ms', '', 1).strip()
             with open("user.txt", "r", encoding="utf-8") as file:
                 for line in file:
@@ -211,12 +198,14 @@ def handle_group_and_developer_messages(message):
             bot.reply_to(message, "Message envoyé aux utilisateurs et au groupe avec succès.")
         else:
             bot.reply_to(message, "Vous n'êtes pas autorisé à utiliser cette commande.")
-    else:
+    else: 
+        if message.text.startswith('SH'):
+            process_input(message) 
         # Traiter les autres messages textuels (par exemple, demander des informations sur les joueurs Free Fire)
         if message.text.startswith("H/"):
             get_ff_info(message)
-        else:
-            bot.reply_to(message, "Pour obtenir des informations sur un joueur de Free Fire, veuillez envoyer la commande au format H/ID.")
-
+        
+                     
+            
 # Démarrer le bot principal
 bot.polling()
