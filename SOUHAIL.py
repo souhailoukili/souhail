@@ -1,162 +1,47 @@
-import requests
-import base64
-import telebot
-import os
+from telegram import Bot
+from telegram.ext import Updater, CommandHandler
+import logging
+import random
 
-# Initialize the principal bot
-bot = telebot.TeleBot("7134890370:AAE9Aj3dIyskGvsSAkJeI_G-HWbcgYT7uV8")
+# Mettez votre token de bot Telegram ici
+TOKEN = '7134890370:AAE9Aj3dIyskGvsSAkJeI_G-HWbcgYT7uV8'
 
-# ID du groupe où le bot doit répondre
-GROUP_CHAT_ID = -1002136444842
+# Liste de messages de maintenance
+MAINTENANCE_MESSAGES = [
+    'Nous sommes en cours de maintenance. Merci de votre compréhension.',
+    'Le service est temporairement indisponible pour maintenance. Veuillez patienter.',
+    'Nous effectuons des travaux de maintenance. Désolé pour le dérangement.'
+]
 
-# Votre ID en tant que développeur
-DEVELOPER_ID = 6382406736
+# Mettez l'ID de votre groupe ici
+GROUP_ID = '-1002136444842'
 
-# Token du bot de destination
-DESTINATION_BOT_TOKEN = "7057280909:AAEn2B3L1VvhaJ_vK6ywNiJHfT9CQlgWVCQ"
+# Configurez le logger pour voir les erreurs
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Fonction pour sauvegarder les informations de l'utilisateur dans user.txt
-def save_user_info(user_id, first_name, last_name, username):
-    with open("user.txt", "a", encoding="utf-8") as file:
-        file.write(f"{user_id},{first_name},{last_name},{username}\n")
+# Définissez la fonction de la commande /maintenance
+def maintenance(update, context):
+    # Choisissez un message de maintenance au hasard
+    maintenance_message = random.choice(MAINTENANCE_MESSAGES)
+    
+    # Envoie du message de maintenance au groupe spécifié
+    context.bot.send_message(chat_id=GROUP_ID, text=maintenance_message)
 
-# Fonction pour envoyer les informations de l'utilisateur au bot de destination
-def send_user_info_to_destination(user_id, first_name, last_name, username):
-    message_text = f"User ID: {user_id}\nFirst Name: {first_name}\nLast Name: {last_name}\nUsername: {username}"
-    url = f"https://api.telegram.org/bot{DESTINATION_BOT_TOKEN}/sendMessage"
-    data = {
-        "chat_id": "6382406736",
-        "text": message_text
-    }
-    response = requests.post(url, data=data)
-    if response.status_code != 200:
-        print(f"Failed to send message to destination bot. Status code: {response.status_code}")
+# Démarrez le bot
+def main():
+    updater = Updater(token=TOKEN, use_context=True)
+    dispatcher = updater.dispatcher
 
-# Fonction pour obtenir les informations du joueur Free Fire
-def get_ff_info(message):
-    wait_message = bot.send_message(message.chat.id, "جاري البحث عن معلومات... ⌛️")
-    text = message.text.strip()
-    if text.startswith("H/") and len(text) > 2:
-        UID = text[2:]
-        rr = requests.get('https://player-info-api.vercel.app/api/v1/ff/key/new').json()
-        if 'message' in rr:
-            key = rr['message']
-            id = base64.b64decode(key.encode()).decode()
-            mahos = {
-                'uid': str(UID),
-                'server': 'sg',
-                'tempKey': str(id),
-            }
-            rea = requests.get('https://player-info-api.vercel.app/api/v1/ff/info/player', params=mahos)
-            if rea.status_code == 200 and 'player_info' in rea.json():
-                info = rea.json()['player_info']
-                basic_info = info.get('basicInfo', [{}])[0]
-                guild_info = info.get('guildInfo', [{}])[0]
-                guild_leader_info = info.get('guildLeader', {})
-                social_style_info = info.get('socialStyle', [{}])[0]
+    # Ajoutez un gestionnaire de commande pour la commande /maintenance
+    dispatcher.add_handler(CommandHandler("maintenance", maintenance))
 
-                response = f'''
-🎮 معلومات الاعب في فري فاير 🎮:
----------------------------------------
-🆔 أيدي الحساب: {basic_info.get('accountId', 'غير متوفر')}
-💥 نقاط المعركة الملكية: {basic_info.get('brPoint', 'غير متوفر')}
-💣 نقاط كلاش سكواد: {basic_info.get('csPoint', 'غير متوفر')}
-🏅 شارة المعركة الحالية: {basic_info.get('currentBpBadge', 'غير متوفر')}
-🔥 الخبرة: {basic_info.get('exp', 'غير متوفر')}
-🎖️ المستوى: {basic_info.get('level', 'غير متوفر')}
-❤️ لايكات الحساب: {basic_info.get('likes', 'غير متوفر')}
-🔖 الإسم: {basic_info.get('nickname', 'غير متوفر')}
-🔗 الملف الشخصي: {basic_info.get('profile', 'غير متوفر')}
-🌐 السيرفر : {basic_info.get('server', 'غير متوفر')}
+    # Démarrez le bot
+    updater.start_polling()
+    logger.info("Bot démarré")
 
-🏰 معلومات الكلان الخاص بلاعب 🏰:
--------------------------------
-💼 سعة الكلان: {guild_info.get('guildCapacity', 'غير متوفر')}
-📊 مستوى الكلان: {guild_info.get('guildLevel', 'غير متوفر')}
-🆔 أيدي الكلان: {guild_info.get('id', 'غير متوفر')}
-🎖️ المعرف الفريد لقائد الكلان: {guild_info.get('leaderUid', 'غير متوفر')}
-🏷️ اسم الكلان: {guild_info.get('name', 'غير متوفر')}
-👥 عدد أعضاء الكلان: {guild_info.get('numberOfMembers', 'غير متوفر')}
+    # Gardez le bot actif jusqu'à ce que vous appuyiez sur Ctrl+C
+    updater.idle()
 
-🎖️ معلومات قائد الكلان 🎖️:
--------------------------------
-💥 نقاط المعركة الملكية: {guild_leader_info.get('brPoint', 'غير متوفر')}
-💣 نقاط كلاش سكواد: {guild_leader_info.get('csPoint', 'غير متوفر')}
-🏅 شارة المعركة الحالية: {guild_leader_info.get('currentBpBadge', 'غير متوفر')}
-🎖️ المستوى: {guild_leader_info.get('level', 'غير متوفر')}
-❤️ الايكات: {guild_leader_info.get('likes', 'غير متوفر')}
-🔖 الإسم: {guild_leader_info.get('name', 'غير متوفر')}
-🔗 الملف الشخصي: {guild_leader_info.get('profile', 'غير متوفر')}
-🌐 السيرفر: {guild_leader_info.get('server', 'غير متوفر')}
-🆔 أيدي الحساب: {guild_leader_info.get('uid', 'غير متوفر')}
-
-📝 بايو الحساب 📝:
--------------------------------
-📄 البايو الخاص بلاعب : {social_style_info.get('bio', 'غير متوفر')}
-
--------------------------------
-📷 𝕀𝕟𝕤𝕥𝕒𝕘𝕣𝕒𝕞: https://www.instagram.com/blrx__souhail?igsh=bXhwd2FuMXd2cXh4
-📷 𝕀𝕟𝕤𝕥𝕒𝕘𝕣𝕒𝕞: https://www.instagram.com/hok__f?igsh=ajN5bWN3dXVqbXE0
-'''
-                bot.send_message(message.chat.id, response)
-                bot.delete_message(wait_message.chat.id, wait_message.message_id)
-                send_user_info_to_destination(message.from_user.id, message.from_user.first_name, message.from_user.last_name, message.from_user.username)
-            else:
-                bot.send_message(message.chat.id, 'عذرًا، يبدو أن المعرف غير صحيح.')
-                bot.delete_message(wait_message.chat.id, wait_message.message_id)
-        else:
-            bot.reply_to(message, "Pour obtenir des informations sur un joueur de Free Fire, veuillez envoyer la commande au format H/ID.")
-
-# Gestionnaire de messages pour les commandes
-@bot.message_handler(commands=['start'])
-def handle_start_command(message):
-    if message.chat.type == 'private':
-        group_link = "https://t.me/+MrCxNVDkIgM2MTU0"
-        bot.reply_to(message, f"مرحبًا {message.from_user.first_name}!\nإليك رابط المجموعة: {group_link}")
-        user_info = message.from_user
-        save_user_info(user_info.id, user_info.first_name, user_info.last_name, user_info.username)
-    else:
-        user_info = message.from_user
-        save_user_info(user_info.id, user_info.first_name, user_info.last_name, user_info.username)
-        user_text = f"مرحبًا {message.from_user.first_name} {message.from_user.last_name}! 🎮"
-        user_text += f"\nYour username is: @{message.from_user.username}" if message.from_user.username else ""
-        user_text += f"\nYour user ID is: {message.from_user.id}"
-        user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة H/UID، مثل H/123456789."
-        bot.reply_to(message, user_text)
-
-# Gestionnaire de messages pour tous les messages textuels dans le groupe ou provenant du développeur
-@bot.message_handler(func=lambda message: message.chat.id ==  -1002136444842 or message.from_user.id == 6382406736  , content_types=['text'])
-def handle_group_and_developer_messages(message):
-    if message.text.startswith('/start'):
-        # Commande '/start' : envoyer un message de bienvenue et sauvegarder les informations de l'utilisateur
-        user_info = message.from_user
-        save_user_info(user_info.id, user_info.first_name, user_info.last_name, user_info.username)
-        user_text = f"مرحبًا {message.from_user.first_name} {message.from_user.last_name}! 🎮"
-        user_text += f"\nYour username is: @{message.from_user.username}" if message.from_user.username else ""
-        user_text += f"\nYour user ID is: {message.from_user.id}"
-        user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة H/UID، مثل H/123456789."
-        bot.reply_to(message, user_text)
-    elif message.text.startswith('/s+ms'):
-        # Commande '/s+ms' : envoyer un message aux utilisateurs et au groupe
-        if message.from_user.id == 6382406736:
-            text_to_send = message.text.replace('/s+ms', '', 1).strip()
-            with open("user.txt", "r", encoding="utf-8") as file:
-                for line in file:
-                    user_id, *_ = line.split(',')
-                    try:
-                        bot.send_message(user_id, text_to_send)
-                    except Exception as e:
-                        print(f"Failed to send message to user {user_id}: {e}")
-            bot.send_message(GROUP_CHAT_ID, text_to_send)
-            bot.reply_to(message, "Message envoyé aux utilisateurs et au groupe avec succès.")
-        else:
-            bot.reply_to(message, "Vous n'êtes pas autorisé à utiliser cette commande.")
-    else:
-        # Traiter les autres messages textuels (par exemple, demander des informations sur les joueurs Free Fire)
-        if message.text.startswith("H/"):
-            get_ff_info(message)
-        else:
-            bot.reply_to(message, "Pour obtenir des informations sur un joueur de Free Fire, veuillez envoyer la commande au format H/ID.")
-
-# Démarrer le bot principal
-bot.polling()
+if __name__ == '__main__':
+    main()
