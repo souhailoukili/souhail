@@ -2,6 +2,7 @@ import requests
 import base64
 import telebot
 import os
+import re
 
 # Initialize the principal bot
 bot = telebot.TeleBot("7134890370:AAE9Aj3dIyskGvsSAkJeI_G-HWbcgYT7uV8")
@@ -10,7 +11,7 @@ bot = telebot.TeleBot("7134890370:AAE9Aj3dIyskGvsSAkJeI_G-HWbcgYT7uV8")
 GROUP_CHAT_ID = -1002136444842
 
 # Votre ID en tant que développeur
-DEVELOPER_ID = 6382406736
+DEVELOPER_ID = 6382406736, 6631613512
 
 # Token du bot de destination
 DESTINATION_BOT_TOKEN = "7057280909:AAEn2B3L1VvhaJ_vK6ywNiJHfT9CQlgWVCQ"
@@ -106,6 +107,53 @@ def get_ff_info(message):
                 bot.delete_message(wait_message.chat.id, wait_message.message_id)
         else:
             bot.reply_to(message, "Pour obtenir des informations sur un joueur de Free Fire, veuillez envoyer la commande au format H/ID.")
+            
+            
+def process_input(message):
+    try:
+        input_parts = message.text.split()
+        if len(input_parts) == 4 and input_parts[0].upper() == 'SH':
+            uid = input_parts[1]
+            region = input_parts[2].lower()
+            num_visits = int(input_parts[3])
+
+            data = {'info_type': 'user', 'server': region, 'id': uid}  
+
+            bot.send_message(message.chat.id, "جـاري البـحـث عـن الاعـب..... ")
+
+            response = requests.post("https://www.freefireinfo.site/", data=data)
+
+            if response.status_code == 200: 
+                match = re.findall(r"strong>Account Name:</strong>(.*?)</li>", response.text) 
+                if match: 
+                    name = match[0].strip() 
+                    bot.send_message(message.chat.id, f"Found Player: {name}")
+                else: 
+                    bot.send_message(message.chat.id, "Player name not found in response.") 
+            else: 
+                bot.send_message(message.chat.id, f"Player Not Found, Status Code: {response.status_code}")
+
+            v = 0
+            success = True  # Flag to indicate whether visits were sent successfully
+            visits_sent_message = ""  # Message to store the total visits sent
+            while v < num_visits and success: 
+                response = requests.post("https://www.freefireinfo.site/", data=data) 
+                if response.status_code == 200: 
+                    v += 1 
+                    visits_sent_message = f"Visit Sent Successfully! Total Visits Sent: {v} @blrx_souhail"
+                else: 
+                    visits_sent_message = f"Visit Not Sent, Status Code: {response.status_code}. Total Visits Sent: {v}"
+                    success = False  # Set flag to False if an error occurs
+
+            # Send the message with the total visits sent
+            bot.send_message(message.chat.id, visits_sent_message)
+        else:
+            bot.send_message(message.chat.id, "Invalid format. Please enter the input in the correct format: 3SKR 12345678 sg/ عـدد المـشـاهدات الذي تريده")
+    except Exception as e:
+        bot.send_message(message.chat.id, "Error processing input. Please try again.")            
+            
+            
+            
 
 # Gestionnaire de messages pour les commandes
 @bot.message_handler(commands=['start'])
@@ -121,11 +169,23 @@ def handle_start_command(message):
         user_text = f"مرحبًا {message.from_user.first_name} {message.from_user.last_name}! 🎮"
         user_text += f"\nYour username is: @{message.from_user.username}" if message.from_user.username else ""
         user_text += f"\nYour user ID is: {message.from_user.id}"
-        user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة H/UID، مثل H/123456789."
+        user_text += "\n\nBOT IFORMATION 🎮\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة\nمثل H/123456789\nBOT الشهره🎮\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة \nمثل SH 1234567 sg 20."
         bot.reply_to(message, user_text)
+        
+        
+@bot.message_handler(func=lambda message: message.chat.id == GROUP_CHAT_ID or True)
+def start(message):
+    if message.text.startswith('SH'):
+        process_input(message)
+        
+        
+        
+        
+        
+        
 
 # Gestionnaire de messages pour tous les messages textuels dans le groupe ou provenant du développeur
-@bot.message_handler(func=lambda message: message.chat.id ==  -1002136444842 or message.from_user.id == 6382406736  , content_types=['text'])
+@bot.message_handler(func=lambda message: message.chat.id ==  -1002136444842 or message.from_user.id == [6382406736, 6631613512  ] , content_types=['text'])
 def handle_group_and_developer_messages(message):
     if message.text.startswith('/start'):
         # Commande '/start' : envoyer un message de bienvenue et sauvegarder les informations de l'utilisateur
@@ -134,11 +194,11 @@ def handle_group_and_developer_messages(message):
         user_text = f"مرحبًا {message.from_user.first_name} {message.from_user.last_name}! 🎮"
         user_text += f"\nYour username is: @{message.from_user.username}" if message.from_user.username else ""
         user_text += f"\nYour user ID is: {message.from_user.id}"
-        user_text += "\n\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة H/UID، مثل H/123456789."
+        user_text += "\n\nBOT IFORMATION 🎮\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة\nمثل H/123456789\nBOT الشهره🎮\nللاستخدام، قم بإرسال المعرف الخاص بلاعب فري فاير بالصيغة \nمثل SH 1234567 sg 20."
         bot.reply_to(message, user_text)
     elif message.text.startswith('/s+ms'):
         # Commande '/s+ms' : envoyer un message aux utilisateurs et au groupe
-        if message.from_user.id == 6382406736:
+        if message.from_user.id == [6382406736, 6631613512]:
             text_to_send = message.text.replace('/s+ms', '', 1).strip()
             with open("user.txt", "r", encoding="utf-8") as file:
                 for line in file:
