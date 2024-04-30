@@ -5,16 +5,16 @@ import os
 import re
 
 # Initialize the principal bot
-bot = telebot.TeleBot("6996779868:AAEBxzwsnVijUmVnLvKA4Y9t52QW0MbbawM")
+bot = telebot.TeleBot("7134890370:AAE9Aj3dIyskGvsSAkJeI_G-HWbcgYT7uV8")
 
 # ID du groupe où le bot doit répondre
-GROUP_CHAT_ID = -1002116508919
+GROUP_CHAT_ID = -1002136444842
 
 # Votre ID en tant que développeur
 DEVELOPER_ID = [6382406736, 6631613512]
 
 # Token du bot de destination
-DESTINATION_BOT_TOKEN = "7057626957:AAEm531DHbaztLrKUHjHrLpyy6AAobbFu08"
+DESTINATION_BOT_TOKEN = "7057280909:AAEn2B3L1VvhaJ_vK6ywNiJHfT9CQlgWVCQ"
 
 # Fonction pour sauvegarder les informations de l'utilisateur dans user.txt
 def save_user_info(user_id, first_name, last_name, username):
@@ -172,7 +172,7 @@ def handle_start_command(message):
         
         
 # Gestionnaire de messages pour tous les messages textuels dans le groupe ou provenant du développeur
-@bot.message_handler(func=lambda message: message.chat.id ==  -1002116508919 or message.from_user.id in DEVELOPER_ID, content_types=['text'])
+@bot.message_handler(func=lambda message: message.chat.id ==  -1002136444842 or message.from_user.id in [6382406736, 6631613512], content_types=['text'])
 def handle_group_and_developer_messages(message):
     if message.text.startswith('/start'):
         # Commande '/start' : envoyer un message de bienvenue et sauvegarder les informations de l'utilisateur
@@ -185,7 +185,7 @@ def handle_group_and_developer_messages(message):
         bot.reply_to(message, user_text)
     elif message.text.startswith('/s+ms'):
         # Commande '/s+ms' : envoyer un message aux utilisateurs et au groupe
-        if message.from_user.id in DEVELOPER_ID:
+        if message.from_user.id in [6382406736, 6631613512]:
             text_to_send = message.text.replace('/s+ms', '', 1).strip()
             with open("user.txt", "r", encoding="utf-8") as file:
                 for line in file:
