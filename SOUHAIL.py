@@ -97,7 +97,6 @@ def get_ff_info(message):
 
 -------------------------------
 📷 𝕀𝕟𝕤𝕥𝕒𝕘𝕣𝕒𝕞: https://www.instagram.com/blrx__souhail?igsh=bXhwd2FuMXd2cXh4
-📷 𝕀𝕟𝕤𝕥𝕒𝕘𝕣𝕒𝕞: https://www.instagram.com/hok__f?igsh=ajN5bWN3dXVqbXE0
 '''
                 bot.send_message(message.chat.id, response)
                 bot.delete_message(wait_message.chat.id, wait_message.message_id)
