@@ -232,8 +232,7 @@ def handle_group_and_developer_messages(message):
 def handle_unknown_commands(message):
     if message.chat.type == 'private':
         bot.reply_to(message, "Invalid command. Please use /start to begin.")
-    else:
-        bot.reply_to(message, "Invalid command. Please check the format.")
+    
 
 # Start the bot
 bot.polling()
