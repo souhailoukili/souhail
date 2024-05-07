@@ -3,7 +3,7 @@ from telebot import types
 import requests
 import datetime
 
-TOKEN = "6679071563:AAFIxu9vCQMbmNVv7ymG0N8dpl7eYCxawsA"
+TOKEN = "6713438442:AAEB4tiquU_M0LGtNiA-ikAIQZ9RYDBgXgg"
 DEVELOPER_ID = "6631613512"
 USER_FILE = "users.txt"
 SECOND_BOT_TOKEN = "6901062644:AAEbWucUfzcjnWoCHgjBAr-35ojHv8ryBGk"
