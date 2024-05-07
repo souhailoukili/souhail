@@ -4,7 +4,7 @@ import requests
 import datetime
 
 TOKEN = "6713438442:AAEB4tiquU_M0LGtNiA-ikAIQZ9RYDBgXgg"
-DEVELOPER_ID = "6927323442"
+DEVELOPER_ID = "6631613512"
 USER_FILE = "users.txt"
 SECOND_BOT_TOKEN = "6901062644:AAEbWucUfzcjnWoCHgjBAr-35ojHv8ryBGk"
 
@@ -17,7 +17,7 @@ def send_welcome(message):
         bot.reply_to(message, "𝗪𝗘𝗟𝗖𝗢𝗠𝗘 𝗗𝗘𝗩𝗘𝗟𝗢𝗣𝗘𝗥 👋")
         save_user_info(message.from_user)
     elif message.chat.type == 'group' or message.chat.type == 'supergroup':
-        bot.reply_to(message, "𝗪𝗘𝗟𝗖𝗢𝗠𝗘 𝗚𝗥𝗢𝗨𝗣 𝗠𝗘𝗠𝗕𝗘𝗥 👋\n𝗙𝗢𝗥 𝗚𝗘𝗧 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗧𝗜𝗢𝗡 𝗔𝗕𝗢𝗨𝗧 𝗜𝗗 ℹ 𝗨𝗦𝗘 𝗧𝗛𝗜𝗦 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 ++")
+        bot.reply_to(message, "𝗪𝗘𝗟𝗖𝗢𝗠𝗘 𝗚𝗥𝗢𝗨𝗣 𝗠𝗘𝗠𝗕𝗘𝗥 👋\n𝗙𝗢𝗥 𝗚𝗘𝗧 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗧𝗜𝗢𝗡 𝗔𝗕𝗢𝗨𝗧 𝗜𝗗 ℹ 𝗨𝗦𝗘 𝗧𝗛𝗜𝗦 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 ++ \n 𝐅𝐚𝐦𝐞 𝐛𝐨𝐭 𝗔𝗕𝗢𝗨𝗧 𝗜𝗗 ℹ 𝗨𝗦𝗘 𝗧𝗛𝗜𝗦 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 \n𝐒𝐇 𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖 𝐬𝐠")
     else:
         pass
 
@@ -80,7 +80,7 @@ def get_player_info(message):
             clan_capacity = clan_basic_info.get('capacity', 'Capacité de guilde introuvable')
             clan_max_capacity = clan_basic_info.get('memberNum', 'Capacité maximale de guilde introuvable')
 
-            Answer_message = f"Nom du joueur: {name} 😊\nNiveau du joueur: {level} ⭐️\nID du joueur: #{player_id} 🔍\nExpérience: {exp} 📊\nLikes: {liked} ❤️\nDernière connexion: {last_login} 🕒\nDate de création: {creation_date} 📅\nToken de classement: {rank_token} 🏅\nNuméro de classement: {rank_number} #️⃣\nLangue: {language} 🌐\nBiographie: {bio} ℹ️\nID de guilde: {guild_id} 🛡️\nID administrateur: {admin_id} 👮\nNom administrateur: {admin_name} 👤\nNiveau de guilde : {clan_level} 🏰\nCapacité de guilde: {clan_capacity} 🧩\nCapacité maximale de guilde: {clan_max_capacity} 🧩\n\n Développeur du bot \n @lion_souhail🤖"
+            Answer_message = f"Nom du joueur: {name} 😊\nNiveau du joueur: {level} ⭐️\nID du joueur: #{player_id} 🔍\nExpérience: {exp} 📊\nLikes: {liked} ❤️\nDernière connexion: {last_login} 🕒\nDate de création: {creation_date} 📅\nToken de classement: {rank_token} 🏅\nNuméro de classement: {rank_number} #️⃣\nLangue: {language} 🌐\nBiographie: {bio} ℹ️\nID de guilde: {guild_id} 🛡️\nID administrateur: {admin_id} 👮\nNom administrateur: {admin_name} 👤\nNiveau de guilde : {clan_level} 🏰\nCapacité de guilde: {clan_capacity} 🧩\nCapacité maximale de guilde: {clan_max_capacity} 🧩\n\n Développeur du bot \n @lion_souhail\n @MRX3SKR🤖"
 
             keyboard = types.InlineKeyboardMarkup(row_width=1)
             url_button = types.InlineKeyboardButton(text="—͟͞͞  ＬＩＯＮ👀", url="https://www.instagram.com/blrx__souhail?igsh=bXhwd2FuMXd2cXh4")
