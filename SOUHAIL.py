@@ -4,7 +4,7 @@ import datetime
 from telebot import types
 
 TOKEN = "6713438442:AAEB4tiquU_M0LGtNiA-ikAIQZ9RYDBgXgg"
-DEVELOPER_CHAT_ID = "6631613512,1480248962"
+DEVELOPER_CHAT_ID = "6631613512"
 GROUP_CHAT_ID = "-1002136444842"
 
 bot = telebot.TeleBot(TOKEN)
